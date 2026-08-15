@@ -1,0 +1,220 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Portafolio de Proyectos | {{ perfil.nombre|default:"Agustín Zelaya" }}{% endblock %}
+
+{% block content %}
+<div class="py-2">
+
+    <!-- Encabezado de Sección -->
+    <div class="text-center mb-5 animate__animated animate__fadeIn">
+        <span class="badge-tech mb-3">
+            <i class="fa-solid fa-laptop-code"></i> Galería de Trabajos
+        </span>
+        <h1 class="display-5 fw-bold text-dark mb-2">Proyectos & Desarrollos</h1>
+        <p class="text-muted lead mx-auto" style="max-width: 620px;">
+            Plataformas web, arquitecturas backend, integraciones de API y herramientas de gestión a medida.
+        </p>
+    </div>
+
+    <!-- Barra de Filtrado por Tecnología -->
+    {% if tecnologias %}
+    <div class="d-flex flex-wrap justify-content-center gap-2 mb-5 animate__animated animate__fadeIn">
+        <a href="{% url 'core:portafolio' %}" 
+           class="filter-pill {% if not tech_actual %}active{% endif %}">
+            Todos
+        </a>
+        {% for tech in tecnologias %}
+            <a href="{% url 'core:portafolio' %}?tech={{ tech.nombre|urlencode }}" 
+               class="filter-pill {% if tech_actual == tech.nombre %}active{% endif %}">
+                {% if tech.icono_class %}<i class="{{ tech.icono_class }} me-1"></i>{% endif %}
+                {{ tech.nombre }}
+            </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Grid de Proyectos -->
+    <div class="row g-4">
+        {% for proyecto in proyectos %}
+        <div class="col-md-6 col-lg-4 animate__animated animate__fadeInUp">
+            <div class="card-custom h-100 p-0 bg-white border d-flex flex-column justify-content-between overflow-hidden project-card">
+                
+                <div>
+                    <!-- Portada con Overlay -->
+                    <div class="position-relative overflow-hidden project-thumb-wrapper">
+                        {% if proyecto.imagen_portada %}
+                            <img src="{{ proyecto.imagen_portada.url }}" class="w-100 h-100 object-fit-cover project-thumb" alt="{{ proyecto.titulo }}">
+                        {% else %}
+                            <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center text-muted" style="min-height: 210px;">
+                                <i class="fa-solid fa-code-branch fa-3x opacity-50"></i>
+                            </div>
+                        {% endif %}
+
+                        {% if proyecto.destacado %}
+                            <span class="badge-featured">
+                                <i class="fa-solid fa-star me-1"></i>Destacado
+                            </span>
+                        {% endif %}
+
+                        <div class="project-overlay d-flex align-items-center justify-content-center">
+                            <a href="{% url 'core:detalle_proyecto' proyecto.slug %}" class="btn btn-light fw-bold px-4 py-2 rounded-pill shadow">
+                                <i class="fa-solid fa-eye me-1"></i> Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Contenido de la Card -->
+                    <div class="p-4">
+                        <h3 class="h5 fw-bold text-dark mb-1">{{ proyecto.titulo }}</h3>
+                        <p class="text-primary small fw-semibold mb-2">{{ proyecto.subtitulo }}</p>
+                        <p class="text-secondary small mb-3 lh-base">
+                            {{ proyecto.descripcion|truncatewords:22 }}
+                        </p>
+
+                        <!-- Tecnologías -->
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            {% for tech in proyecto.tecnologias.all|slice:":4" %}
+                                <span class="badge-tech py-1 px-2" style="font-size: 0.75rem;">
+                                    {% if tech.icono_class %}<i class="{{ tech.icono_class }}"></i>{% endif %}
+                                    {{ tech.nombre }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer de Acciones -->
+                <div class="p-4 pt-0 d-flex justify-content-between align-items-center border-top border-light-subtle">
+                    <a href="{% url 'core:detalle_proyecto' proyecto.slug %}" class="text-decoration-none fw-semibold small text-primary d-inline-flex align-items-center gap-1">
+                        <span>Explorar caso</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                    <div class="d-flex align-items-center gap-2">
+                        {% if proyecto.link_video_demo %}
+                            <a href="{{ proyecto.link_video_demo }}" target="_blank" rel="noopener noreferrer" class="action-icon-link text-danger" title="Video Demo">
+                                <i class="fa-solid fa-play"></i>
+                            </a>
+                        {% endif %}
+                        {% if proyecto.link_github %}
+                            <a href="{{ proyecto.link_github }}" target="_blank" rel="noopener noreferrer" class="action-icon-link text-dark" title="Código en GitHub">
+                                <i class="fa-brands fa-github"></i>
+                            </a>
+                        {% endif %}
+                        {% if proyecto.link_deploy %}
+                            <a href="{{ proyecto.link_deploy }}" target="_blank" rel="noopener noreferrer" class="action-icon-link text-primary" title="Demo en producción">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="card-custom bg-white border p-5 d-inline-block mx-auto" style="max-width: 500px;">
+                <i class="fa-solid fa-folder-open fa-3x text-muted opacity-50 mb-3"></i>
+                <h4 class="h5 fw-bold text-dark mb-2">No se encontraron proyectos</h4>
+                <p class="text-muted small mb-3">No hay proyectos asociados a este criterio de búsqueda.</p>
+                <a href="{% url 'core:portafolio' %}" class="btn btn-sm btn-primary">Ver todos los proyectos</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 16px;
+        background-color: #ffffff;
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .filter-pill:hover {
+        background-color: #eff6ff;
+        color: var(--primary-accent);
+        border-color: #bfdbfe;
+        transform: translateY(-2px);
+    }
+
+    .filter-pill.active {
+        background-color: var(--primary-accent);
+        color: #ffffff;
+        border-color: var(--primary-accent);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .project-thumb-wrapper {
+        height: 210px;
+        background-color: #f8fafc;
+    }
+
+    .project-thumb {
+        transition: transform 0.4s ease;
+    }
+
+    .project-card:hover .project-thumb {
+        transform: scale(1.04);
+    }
+
+    .badge-featured {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background-color: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(4px);
+        color: #facc15;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 50px;
+        z-index: 2;
+    }
+
+    .project-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 3;
+    }
+
+    .project-card:hover .project-overlay {
+        opacity: 1;
+    }
+
+    .action-icon-link {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background-color: #f1f5f9;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .action-icon-link:hover {
+        background-color: var(--dark-bg);
+        color: #ffffff !important;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

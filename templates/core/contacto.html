@@ -1,0 +1,234 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Contacto | {{ perfil.nombre|default:"Agustín Zelaya" }}{% endblock %}
+
+{% block content %}
+<div class="py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-11 col-xl-10">
+            
+            <!-- Encabezado de Sección -->
+            <div class="text-center mb-5">
+                <span class="badge-tech mb-3">
+                    <i class="fa-solid fa-paper-plane"></i> Contacto Directo
+                </span>
+                <h1 class="display-5 fw-bold text-dark mb-2">Hablemos sobre tu proyecto</h1>
+                <p class="text-muted lead mx-auto" style="max-width: 620px;">
+                    ¿Tenés una propuesta laboral, una consulta sobre arquitectura/desarrollo o una idea que quieras construir?
+                </p>
+            </div>
+
+            <!-- Card Principal de Contacto -->
+            <div class="card-custom overflow-hidden border-0 shadow-lg">
+                <div class="row g-0">
+                    
+                    <!-- Columna Izquierda: Información de Contacto -->
+                    <div class="col-md-5 bg-dark text-white p-4 p-lg-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <h3 class="h5 fw-bold text-white mb-2">Canales de Contacto</h3>
+                            <p class="text-light opacity-75 small mb-4">
+                                Respondé a través de este formulario o comunicate directamente por cualquiera de mis canales oficiales.
+                            </p>
+                            
+                            <hr class="border-secondary opacity-25 my-4">
+
+                            <!-- Email -->
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="contact-icon bg-primary text-white me-3">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <span class="small text-light opacity-75 d-block">Correo Electrónico</span>
+                                    <a href="mailto:{{ perfil.email|default:'contacto@agustinzelaya.com' }}" class="text-white fw-semibold text-decoration-none hover-primary">
+                                        {{ perfil.email|default:"contacto@agustinzelaya.com" }}
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- WhatsApp -->
+                            {% if perfil.whatsapp %}
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="contact-icon bg-success text-white me-3">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </div>
+                                <div>
+                                    <span class="small text-light opacity-75 d-block">WhatsApp Directo</span>
+                                    <a href="https://wa.me/{{ perfil.whatsapp }}?text=Hola%20Agust%C3%ADn,%20vi%20tu%20portafolio%20y%20me%20gustar%C3%ADa%20conversar." target="_blank" rel="noopener noreferrer" class="text-white fw-semibold text-decoration-none hover-primary">
+                                        {{ perfil.whatsapp }}
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Ubicación -->
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="contact-icon bg-secondary text-white me-3">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <span class="small text-light opacity-75 d-block">Ubicación</span>
+                                    <span class="text-white fw-semibold">San Miguel de Tucumán, Argentina</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Redes Sociales -->
+                        <div class="pt-4 border-top border-secondary border-opacity-25 mt-4">
+                            <span class="small text-uppercase fw-semibold text-light opacity-75 d-block mb-3 letter-spacing-1">
+                                Redes & Repositorios
+                            </span>
+                            <div class="d-flex gap-3 fs-4">
+                                {% if perfil.linkedin %}
+                                    <a href="{{ perfil.linkedin }}" target="_blank" rel="noopener noreferrer" class="social-btn" title="LinkedIn">
+                                        <i class="fa-brands fa-linkedin-in"></i>
+                                    </a>
+                                {% endif %}
+                                {% if perfil.github %}
+                                    <a href="{{ perfil.github }}" target="_blank" rel="noopener noreferrer" class="social-btn" title="GitHub">
+                                        <i class="fa-brands fa-github"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Formulario -->
+                    <div class="col-md-7 bg-white p-4 p-lg-5">
+                        <h3 class="h4 fw-bold text-dark mb-4">Enviame un mensaje</h3>
+
+                        <form method="POST" novalidate>
+                            {% csrf_token %}
+                            
+                            {# Campo Honeypot invisible para protección anti-spam #}
+                            {{ form.website_check }}
+
+                            <div class="row g-3">
+                                <!-- Nombre -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.nombre.id_for_label }}" class="form-label small fw-semibold text-dark">
+                                        Nombre completo <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.nombre }}
+                                    {% if form.nombre.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ form.nombre.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-md-6">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label small fw-semibold text-dark">
+                                        Correo Electrónico <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ form.email.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Asunto -->
+                                <div class="col-12">
+                                    <label for="{{ form.asunto.id_for_label }}" class="form-label small fw-semibold text-dark">
+                                        Asunto <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.asunto }}
+                                    {% if form.asunto.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ form.asunto.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Mensaje -->
+                                <div class="col-12">
+                                    <label for="{{ form.mensaje.id_for_label }}" class="form-label small fw-semibold text-dark">
+                                        Mensaje <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.mensaje }}
+                                    {% if form.mensaje.errors %}
+                                        <div class="text-danger small mt-1">
+                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ form.mensaje.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Botón Submit -->
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                        <span>Enviar Mensaje</span>
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    .social-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+    .social-btn:hover {
+        background-color: var(--primary-accent);
+        color: #ffffff;
+        transform: translateY(-3px);
+    }
+
+    .hover-primary:hover {
+        color: #93c5fd !important;
+        text-decoration: underline !important;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 16px;
+        border: 1px solid var(--border-color);
+        background-color: #f8fafc;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        background-color: #ffffff;
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .letter-spacing-1 {
+        letter-spacing: 0.08em;
+    }
+</style>
+{% endblock %}

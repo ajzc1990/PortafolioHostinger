@@ -1,0 +1,34 @@
+services:
+  web:
+    build: .
+    container_name: portafolio_web
+    restart: always
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - db_data:/app/data
+    env_file:
+      - .env
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: portafolio_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - web
+
+volumes:
+  static_volume:
+  media_volume:
+  db_data:

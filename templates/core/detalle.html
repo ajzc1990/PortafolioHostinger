@@ -1,0 +1,168 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ proyecto.titulo }} | Detalle de Proyecto{% endblock %}
+{% block meta_description %}{{ proyecto.subtitulo }}{% endblock %}
+
+{% block content %}
+<div class="py-2">
+    
+    <!-- Breadcrumb de Navegación -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-white px-3 py-2 rounded-3 border">
+            <li class="breadcrumb-item">
+                <a href="{% url 'core:home' %}" class="text-decoration-none text-primary">
+                    <i class="fa-solid fa-house me-1"></i>Inicio
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'core:portafolio' %}" class="text-decoration-none text-primary">Proyectos</a>
+            </li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">{{ proyecto.titulo }}</li>
+        </ol>
+    </nav>
+
+    <!-- Fila Principal del Proyecto -->
+    <div class="row g-4 g-lg-5">
+        
+        <!-- Columna Izquierda: Imagen de Portada y Galería -->
+        <div class="col-lg-7 animate__animated animate__fadeInLeft">
+            <div class="card-custom overflow-hidden border p-2 bg-white shadow-sm mb-4">
+                {% if proyecto.imagen_portada %}
+                    <img src="{{ proyecto.imagen_portada.url }}" alt="Captura del sistema {{ proyecto.titulo }}" class="img-fluid rounded-3 w-100 project-main-image">
+                {% else %}
+                    <div class="bg-light rounded-3 d-flex flex-column align-items-center justify-content-center py-5" style="min-height: 380px;">
+                        <i class="fa-solid fa-laptop-code fa-4x text-muted opacity-50 mb-3"></i>
+                        <span class="text-muted fw-semibold">Vista previa no disponible</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Descripción Técnica en Profundidad -->
+            <div class="card-custom p-4 bg-white border">
+                <h2 class="h5 fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-primary"></i> Arquitectura y Solución Técnica
+                </h2>
+                <div class="text-secondary lh-lg fs-6">
+                    {{ proyecto.descripcion|linebreaks }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Resumen, Stack y Acciones -->
+        <div class="col-lg-5 animate__animated animate__fadeInRight">
+            <div class="sticky-lg-top" style="top: 30px; z-index: 10;">
+                <div class="card-custom p-4 bg-white border">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge-tech">
+                            <i class="fa-solid fa-calendar-check"></i> {{ proyecto.fecha_creacion|date:"M Y" }}
+                        </span>
+                        {% if proyecto.destacado %}
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1 fw-semibold">
+                                <i class="fa-solid fa-star me-1"></i>Destacado
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <h1 class="h2 fw-bold text-dark mb-2">{{ proyecto.titulo }}</h1>
+                    <p class="text-muted mb-4 fs-6">{{ proyecto.subtitulo }}</p>
+
+                    <!-- Stack Tecnológico -->
+                    <div class="mb-4">
+                        <h3 class="h6 fw-bold text-uppercase text-dark mb-2 letter-spacing-1">Stack Tecnológico</h3>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for tech in proyecto.tecnologias.all %}
+                                <span class="badge-tech py-2 px-3">
+                                    {% if tech.icono_class %}<i class="{{ tech.icono_class }}"></i>{% endif %}
+                                    {{ tech.nombre }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted small">No se listaron tecnologías.</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Enlaces y Acciones -->
+                    <div class="d-grid gap-3">
+                        {% if proyecto.link_deploy %}
+                            <a href="{{ proyecto.link_deploy }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                <span>Ver Demo en Producción</span>
+                            </a>
+                        {% endif %}
+
+                        {% if proyecto.link_video_demo %}
+                            <a href="{{ proyecto.link_video_demo }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-lg fw-semibold d-flex align-items-center justify-content-center gap-2">
+                                <i class="fa-solid fa-play"></i>
+                                <span>Ver Video Demostración</span>
+                            </a>
+                        {% endif %}
+
+                        {% if proyecto.link_github %}
+                            <a href="{{ proyecto.link_github }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-lg fw-semibold d-flex align-items-center justify-content-center gap-2">
+                                <i class="fa-brands fa-github"></i>
+                                <span>Explorar Código en GitHub</span>
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Sección de Proyectos Relacionados -->
+    {% if proyectos_relacionados %}
+    <div class="mt-5 pt-4 border-top">
+        <h2 class="h4 fw-bold text-dark mb-4">Otros proyectos que te pueden interesar</h2>
+        <div class="row g-4">
+            {% for rel in proyectos_relacionados %}
+            <div class="col-md-4">
+                <div class="card-custom h-100 p-3 bg-white d-flex flex-column justify-content-between">
+                    <div>
+                        {% if rel.imagen_portada %}
+                            <img src="{{ rel.imagen_portada.url }}" class="img-fluid rounded-3 mb-3 w-100" style="height: 160px; object-fit: cover;" alt="{{ rel.titulo }}">
+                        {% endif %}
+                        <h3 class="h6 fw-bold text-dark mb-1">{{ rel.titulo }}</h3>
+                        <p class="text-muted small mb-3">{{ rel.subtitulo|truncatechars:85 }}</p>
+                    </div>
+                    <a href="{% url 'core:detalle_proyecto' rel.slug %}" class="btn btn-sm btn-outline-primary fw-semibold w-100">
+                        Ver Detalles <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Botón Volver -->
+    <div class="text-center mt-5">
+        <a href="{% url 'core:portafolio' %}" class="btn btn-link text-decoration-none text-muted fw-semibold">
+            <i class="fa-solid fa-arrow-left me-2"></i> Volver a la galería completa de proyectos
+        </a>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .project-main-image {
+        transition: transform 0.4s ease;
+    }
+    
+    .project-main-image:hover {
+        transform: scale(1.015);
+    }
+
+    .letter-spacing-1 {
+        letter-spacing: 0.05em;
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}

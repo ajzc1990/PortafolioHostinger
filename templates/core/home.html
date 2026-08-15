@@ -1,0 +1,271 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ perfil.nombre|default:"Agustín Zelaya" }} | Portafolio Profesional{% endblock %}
+
+{% block content %}
+<div class="py-2">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section d-flex align-items-center py-5">
+        <div class="row align-items-center justify-content-between g-5 w-100 mx-0">
+            
+            <!-- Columna Texto / Presentación -->
+            <div class="col-lg-7 text-center text-lg-start animate__animated animate__fadeInLeft">
+                
+                <!-- Badge de Disponibilidad -->
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle mb-3">
+                    <span class="status-pulse"></span>
+                    <span class="small fw-semibold">Disponible para nuevos proyectos & desafíos</span>
+                </div>
+
+                <h1 class="display-3 fw-extrabold text-dark tracking-tight mb-2">
+                    {{ perfil.nombre|default:"Agustín Zelaya" }}
+                </h1>
+                
+                <h2 class="h3 text-primary fw-medium mb-4">
+                    {{ perfil.rol|default:"Ingeniero en Sistemas de Información | Full Stack Developer" }}
+                </h2>
+
+                <p class="lead text-secondary mb-4 pe-lg-4 lh-base">
+                    {{ perfil.bio_corta|default:"Especializado en el diseño y construcción de plataformas web robustas, arquitectura backend en Python/Django, bases de datos relacionales y soluciones de software escalables." }}
+                </p>
+
+                <!-- Botones de Acción Primarios -->
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-4">
+                    <a href="{% url 'core:portafolio' %}" class="btn btn-primary btn-lg px-4 py-3 fw-semibold shadow-sm d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-code"></i>
+                        <span>Explorar Proyectos</span>
+                    </a>
+                    
+                    <a href="{% url 'core:contacto' %}" class="btn btn-outline-dark btn-lg px-4 py-3 fw-semibold d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Contactar</span>
+                    </a>
+
+                    {% if perfil.cv_pdf %}
+                    <a href="{{ perfil.cv_pdf.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-light border btn-lg px-4 py-3 fw-semibold text-secondary d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                        <span>CV</span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Redes de Contacto Rápido -->
+                <div class="d-flex align-items-center justify-content-center justify-content-lg-start gap-3 text-secondary pt-2">
+                    <span class="small text-uppercase fw-bold text-muted letter-spacing-1">Links directos:</span>
+                    {% if perfil.github %}
+                        <a href="{{ perfil.github }}" target="_blank" rel="noopener noreferrer" class="social-hero-link" title="GitHub">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                    {% endif %}
+                    {% if perfil.linkedin %}
+                        <a href="{{ perfil.linkedin }}" target="_blank" rel="noopener noreferrer" class="social-hero-link" title="LinkedIn">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                    {% endif %}
+                    {% if perfil.whatsapp %}
+                        <a href="https://wa.me/{{ perfil.whatsapp }}" target="_blank" rel="noopener noreferrer" class="social-hero-link" title="WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Columna Foto de Perfil -->
+            <div class="col-lg-5 text-center animate__animated animate__zoomIn">
+                <div class="profile-photo-frame mx-auto">
+                    {% if perfil.foto %}
+                        <img src="{{ perfil.foto.url }}" alt="{{ perfil.nombre }}" class="profile-photo-img">
+                    {% else %}
+                        <div class="profile-photo-placeholder">
+                            <i class="fa-solid fa-user-tie fa-5x text-muted"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- TECNOLOGÍAS DESTACADAS -->
+    {% if perfil.tecnologias_destacadas.all %}
+    <section class="py-4 my-4 border-top border-bottom">
+        <div class="text-center mb-3">
+            <span class="small fw-bold text-uppercase text-muted letter-spacing-1">Stack Tecnológico Principal</span>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+            {% for tech in perfil.tecnologias_destacadas.all %}
+                <div class="badge-tech py-2 px-3 fs-6">
+                    {% if tech.icono_class %}<i class="{{ tech.icono_class }}"></i>{% endif %}
+                    <span>{{ tech.nombre }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- PROYECTOS DESTACADOS -->
+    {% if proyectos_destacados %}
+    <section class="py-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+            <div>
+                <span class="badge-tech mb-2"><i class="fa-solid fa-star"></i> Destacados</span>
+                <h2 class="h3 fw-bold text-dark mb-0">Sistemas & Aplicaciones</h2>
+            </div>
+            <a href="{% url 'core:portafolio' %}" class="btn btn-link text-decoration-none fw-semibold text-primary p-0 mt-2 mt-sm-0">
+                Ver todos los proyectos <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for proyecto in proyectos_destacados %}
+            <div class="col-md-6">
+                <div class="card-custom h-100 p-3 p-lg-4 bg-white d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Portada del Proyecto -->
+                        <div class="rounded-3 overflow-hidden mb-3 border position-relative" style="height: 220px;">
+                            {% if proyecto.imagen_portada %}
+                                <img src="{{ proyecto.imagen_portada.url }}" class="w-100 h-100 object-fit-cover" alt="{{ proyecto.titulo }}">
+                            {% else %}
+                                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center text-muted">
+                                    <i class="fa-solid fa-laptop-code fa-3x opacity-50"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <h3 class="h5 fw-bold text-dark mb-1">{{ proyecto.titulo }}</h3>
+                        <p class="text-muted small mb-3">{{ proyecto.subtitulo }}</p>
+
+                        <!-- Tecnologías -->
+                        <div class="d-flex flex-wrap gap-1 mb-3">
+                            {% for tech in proyecto.tecnologias.all|slice:":4" %}
+                                <span class="badge-tech py-1 px-2" style="font-size: 0.72rem;">
+                                    {% if tech.icono_class %}<i class="{{ tech.icono_class }}"></i>{% endif %}
+                                    {{ tech.nombre }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Enlaces -->
+                    <div class="pt-3 border-top d-flex gap-2">
+                        <a href="{% url 'core:detalle_proyecto' proyecto.slug %}" class="btn btn-sm btn-primary fw-semibold flex-grow-1">
+                            Ver Detalles <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                        {% if proyecto.link_deploy %}
+                            <a href="{{ proyecto.link_deploy }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-dark" title="Demo en vivo">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        {% endif %}
+                        {% if proyecto.link_github %}
+                            <a href="{{ proyecto.link_github }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-dark" title="Código en GitHub">
+                                <i class="fa-brands fa-github"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .fw-extrabold {
+        font-weight: 800;
+    }
+    
+    .tracking-tight {
+        letter-spacing: -0.025em;
+    }
+
+    .profile-photo-frame {
+        width: 260px;
+        height: 260px;
+        border-radius: 30px;
+        padding: 8px;
+        background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(30,41,59,0.1));
+        box-shadow: 0 20px 40px -15px rgba(0,0,0,0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-photo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 24px;
+        background: #ffffff;
+    }
+
+    .profile-photo-placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: 24px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .status-pulse {
+        width: 8px;
+        height: 8px;
+        background-color: #22c55e;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    .social-hero-link {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .social-hero-link:hover {
+        background-color: var(--primary-accent);
+        color: #ffffff;
+        border-color: var(--primary-accent);
+        transform: translateY(-2px);
+    }
+
+    .letter-spacing-1 {
+        letter-spacing: 0.08em;
+    }
+
+    @media (max-width: 991px) {
+        .profile-photo-frame {
+            width: 200px;
+            height: 200px;
+            border-radius: 24px;
+        }
+        .profile-photo-img {
+            border-radius: 18px;
+        }
+    }
+</style>
+{% endblock %}

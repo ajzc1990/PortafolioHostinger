@@ -1,0 +1,174 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Trayectoria & Experiencia | {{ perfil.nombre|default:"Agustín Zelaya" }}{% endblock %}
+
+{% block content %}
+<div class="py-3">
+    
+    <!-- Encabezado de Sección -->
+    <div class="text-center mb-5 animate__animated animate__fadeIn">
+        <span class="badge-tech mb-3">
+            <i class="fa-solid fa-timeline"></i> Trayectoria Profesional
+        </span>
+        <h1 class="display-5 fw-bold text-dark mb-2">Experiencia & Educación</h1>
+        <p class="text-muted lead mx-auto" style="max-width: 650px;">
+            Mi recorrido en ingeniería, desarrollo de software y formación técnica continua.
+        </p>
+    </div>
+
+    <div class="row g-5">
+        
+        <!-- Columna 1: Experiencia Laboral -->
+        <div class="col-lg-6 animate__animated animate__fadeInLeft">
+            <div class="d-flex align-items-center mb-4">
+                <div class="icon-section bg-primary text-white me-3">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div>
+                    <h2 class="h4 fw-bold mb-0 text-dark">Experiencia Profesional</h2>
+                    <span class="small text-muted">Proyectos, empresas y roles de impacto</span>
+                </div>
+            </div>
+
+            <div class="timeline-wrapper">
+                {% for exp in experiencias %}
+                <div class="timeline-node">
+                    <div class="timeline-indicator bg-primary"></div>
+                    
+                    <div class="card-custom p-4 ms-3 mb-4">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                            <span class="badge {% if exp.es_actual %}bg-primary text-white{% else %}bg-primary-subtle text-primary border border-primary-subtle{% endif %} rounded-pill px-3 py-1 fw-semibold">
+                                <i class="fa-regular fa-calendar-days me-1"></i>
+                                {{ exp.fecha_inicio|date:"M Y" }} — {% if exp.es_actual %}Actualidad{% else %}{{ exp.fecha_fin|date:"M Y" }}{% endif %}
+                            </span>
+
+                            {% if exp.ubicacion %}
+                            <span class="small text-muted">
+                                <i class="fa-solid fa-location-dot me-1"></i>{{ exp.ubicacion }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <h3 class="h5 fw-bold text-dark mb-1">{{ exp.puesto }}</h3>
+                        <div class="fw-semibold text-primary mb-3">{{ exp.empresa }}</div>
+
+                        <div class="text-secondary small mb-3 lh-base">
+                            {{ exp.descripcion|linebreaks }}
+                        </div>
+
+                        {% if exp.tecnologias.all %}
+                        <div class="d-flex flex-wrap gap-1 pt-2 border-top">
+                            {% for tech in exp.tecnologias.all %}
+                                <span class="badge-tech">
+                                    {% if tech.icono_class %}<i class="{{ tech.icono_class }}"></i>{% endif %}
+                                    {{ tech.nombre }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted ps-3">No hay experiencias registradas en este momento.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Columna 2: Educación y Formación -->
+        <div class="col-lg-6 animate__animated animate__fadeInRight">
+            <div class="d-flex align-items-center mb-4">
+                <div class="icon-section bg-dark text-white me-3">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h2 class="h4 fw-bold mb-0 text-dark">Educación & Títulos</h2>
+                    <span class="small text-muted">Carrera universitaria y especializaciones</span>
+                </div>
+            </div>
+
+            <div class="timeline-wrapper">
+                {% for edu in educacion %}
+                <div class="timeline-node">
+                    <div class="timeline-indicator bg-dark"></div>
+                    
+                    <div class="card-custom p-4 ms-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge {% if edu.en_curso %}bg-success text-white{% else %}bg-secondary-subtle text-dark border{% endif %} rounded-pill px-3 py-1 fw-semibold">
+                                <i class="fa-regular fa-calendar-days me-1"></i>
+                                {{ edu.fecha_inicio|date:"Y" }} — {% if edu.en_curso %}En curso{% else %}{{ edu.fecha_fin|date:"Y" }}{% endif %}
+                            </span>
+                        </div>
+
+                        <h3 class="h5 fw-bold text-dark mb-1">{{ edu.titulo_obtenido }}</h3>
+                        <div class="text-muted fw-semibold mb-2">
+                            <i class="fa-solid fa-building-columns me-2 text-secondary"></i>{{ edu.institucion }}
+                        </div>
+
+                        {% if edu.descripcion %}
+                        <div class="text-secondary small lh-base mt-2">
+                            {{ edu.descripcion|linebreaks }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted ps-3">No hay registros educativos cargados.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Botón Descargar CV -->
+    {% if perfil.cv_pdf %}
+    <div class="text-center mt-5 pt-3">
+        <a href="{{ perfil.cv_pdf.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-dark btn-lg px-5 py-3 rounded-pill shadow d-inline-flex align-items-center gap-2 fw-semibold">
+            <i class="fa-solid fa-file-arrow-down"></i>
+            <span>Descargar Currículum (PDF)</span>
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .icon-section {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .timeline-wrapper {
+        position: relative;
+        padding-left: 10px;
+    }
+
+    .timeline-node {
+        position: relative;
+        border-left: 2px solid #e2e8f0;
+        padding-bottom: 8px;
+    }
+
+    .timeline-indicator {
+        position: absolute;
+        left: -7px;
+        top: 24px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+
+    .timeline-node:last-child {
+        border-left: 2px solid transparent;
+    }
+</style>
+{% endblock %}
